@@ -9,11 +9,19 @@ headers = {
     "User-Agent": st_useragent
 }
 
-url = "https://www.sgu.ru/svodka/1296"
+url = "https://www.sgu.ru/svodka/1295"
 req = requests.get(url)
 src = req.text
 soup = BeautifulSoup(src, 'lxml')
-title = soup.find_all(class_="svodka-table__info-wrap")[0]
-s = title.find_all(class_="svodka-table__info-name")
-print(s[2].string, s[4].string, s[5].string)
-
+tables = soup.find_all('table')
+# print(tables)
+for index, table in enumerate(tables):
+    for row in table.find_all('tr'):
+        cols = row.find_all('td')
+        cols = [col.text.strip() for col in cols]
+        # print(cols)
+        if len(cols) > 0:
+            cols[10] = ' '.join(cols[10].split())[4:]
+            cols[9] = int(cols[9])
+            s = cols[10].split()
+            print(s)
