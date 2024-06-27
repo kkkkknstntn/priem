@@ -43,6 +43,14 @@ def func(spisok, urls):
     abituras_old["kom"] = OrderedDict()
     abituras_old["zo"] = OrderedDict()
 
+    d = {}
+    d["budj_obs"] = ["Раздел ОБЩИЙ КОНКУРС"]
+    d["budj_osob"] =  ["Раздел Особые Права (квота и спецквота)"]
+    d["cel"] = ["Раздел Целевики"]
+    d["kom"] = ["ПИ ЗАОЧНОЕ"]
+    d["zo"] = ["Коммерция"]
+
+
     st_accept = "text/html"
     st_useragent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15"
     headers = {
@@ -128,7 +136,7 @@ def func(spisok, urls):
                             tables.add("budj_osob")
                             prior[cols[9] - 1] += " ОП"
                         if ttl[2] == "Бюджет/Отдельная":
-                            tables.add("budj_otdel")
+                            tables.add("budj_osob")
                             prior[cols[9] - 1] += " ОК"
                         if ttl[2] == "Полное":
                             tables.add("kom")
@@ -236,9 +244,10 @@ def func(spisok, urls):
                 abituras_old[fl][row1[0]] = row1
     abituras_old["budj_otdel"] = {}
     abituras_old["budj_otdel"] = abituras_old["budj_osob"]
-
-    for fl in spisok:
-        with open("new/" + fl + ".csv", 'a', newline='') as csvfile:
+    with open("new.csv", 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        for fl in spisok:
+            writer.writerow(d[fl])
             for ab in abituras_old[fl]:
                 if ab not in abituras:
                     if len(abituras_old[fl][ab]) < 20:
@@ -259,28 +268,23 @@ def func(spisok, urls):
                                                                                                          ab][-3:]
                     writer = csv.writer(csvfile)
                     writer.writerow(new_row)
-
-    for ab in abituras:
-        row = abituras[ab].row
-        for i in range(len(row)):
-            if row[i] == 'Нет данных' or row[i] == '---':
-                row[i] = ''
-            elif row[i] == 'Ориг.':
-                row[i] = 'Оригинал'
-        for file in abituras[ab].tables:
-            if file in spisok:
-                filename = "new/" + file + ".csv"
-                if ab not in abituras_old[file]:
-                    if len(row) < 8:
-                        row.insert(6, '')
-                    new_row = row[0:1] + ['', ''] + abituras[ab].prior[0:5] + [
-                        ' '.join(abituras[ab].prior[5:])] + row[1:] + [' '.join(abituras[ab].dop), '', 'госуслуги', 'Нет документа об образовании']
-                    with open(filename, 'a', newline='') as csvfile:
-                        writer = csv.writer(csvfile)
+            for ab in abituras:
+                if fl in abituras[ab].tables and ab not in abituras_old[fl]:
+                        row = abituras[ab].row
+                        for i in range(len(row)):
+                            if row[i] == 'Нет данных' or row[i] == '---':
+                                row[i] = ''
+                            elif row[i] == 'Ориг.':
+                                row[i] = 'Оригинал'
+                        if len(row) < 8:
+                            row.insert(6, '')
+                        new_row = row[0:1] + ['', ''] + abituras[ab].prior[0:5] + [
+                            ' '.join(abituras[ab].prior[5:])] + row[1:] + [' '.join(abituras[ab].dop),
+                                                                           '', 'госуслуги', 'Нет документа об образовании']
                         writer.writerow(new_row)
 
 
-spisok = ["budj_obs", "budj_osob","budj_otdel", "cel", "zo"]
+spisok = ["budj_obs", "budj_osob", "cel", "zo"]
 func(spisok, urls)
 
 urls = ["https://www.sgu.ru/svodka/1787", "https://www.sgu.ru/svodka/1788", "https://www.sgu.ru/svodka/1791",
