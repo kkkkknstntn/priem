@@ -3,6 +3,10 @@ from bs4 import BeautifulSoup
 import re
 import csv
 from collections import OrderedDict
+def remove_leading_zeros(s):
+    return re.sub(r'^0+', '', s)
+
+
 
 urls = ["https://www.sgu.ru/svodka/1295", "https://www.sgu.ru/svodka/1494", "https://www.sgu.ru/svodka/1619",
 
@@ -231,9 +235,7 @@ def func(spisok, urls):
                                         dop[-1] += " Ц"
                                 i = j
                             i += 1
-
-
-                        abituras[cols[1]] = Abitura(cols[1:8], prior, tables, dop)
+                        abituras[remove_leading_zeros(cols[1])] = Abitura(cols[1:8], prior, tables, dop)
 
     for fl in abituras_old:
         with open("old/" + fl + ".csv", mode='r') as file:
@@ -241,9 +243,8 @@ def func(spisok, urls):
             for row in reader:
                 row1 = row[0].split(';')
                 print(row1)
-                abituras_old[fl][row1[0]] = row1
-    abituras_old["budj_otdel"] = {}
-    abituras_old["budj_otdel"] = abituras_old["budj_osob"]
+                abituras_old[fl][remove_leading_zeros(row1[0])] = row1
+
     with open("new.csv", 'a', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for fl in spisok:
