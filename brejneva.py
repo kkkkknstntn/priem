@@ -93,15 +93,16 @@ for row in cell_list:
             # prior[pr] = kniit[row[8]]
         prior[pr] += kniit[row[8]]+" "
         # print(prior)
-        print(row12)
+        # print(row12)
         if (row12[0]) == "З":
             prior[pr] += "ЗО "
             tables.add("zo")
             flag1 = False
         if "и" in row12:
+            print(row12)
             prior[pr] += "ИК "
             tables.add("inostr")
-        if "ОК" in row12:
+        elif "ОК" in row12:
             prior[pr] += "ОК "
             tables.add("budj_osob")
         elif "ОП" in row12:
@@ -131,8 +132,10 @@ for row in cell_list:
             orig = row[32]
         row_ab = [row[4],row[6],'',orig,'','',lich, zam]
         # print(row_ab, row[10])
+
         if row_ab[1] != "161-452-197 48":
             if row[6] not in abituras:
+                print(row[6], tables)
                 row_ab[0], row_ab[1] = row_ab[1], row_ab[0]
                 abituras[row[6]] = Abitura(row=row_ab, prior=prior, tables=tables)
                 flag = False
@@ -151,12 +154,6 @@ for row in cell_list:
 
 workbook.close()
 
-workbook = xlsxwriter.Workbook('new.xlsx')
-worksheet = workbook.add_worksheet()
-
-
-workbook = {}
-worksheet = {}
 
 
 for fl in abituras_old:
@@ -173,7 +170,8 @@ for fl in abituras_old:
         else:
             if abituras[ab].row[-1] == "":
                 abituras_old[fl][ab][-1].replace('Нет документа об образовании', "")
-            row = abituras_old[fl][ab][:3] + abituras[ab].prior  +abituras_old[fl][ab][9:]
+            row = abituras[ab].row[:2]+ [abituras_old[fl][ab][2]] + abituras[ab].prior  +abituras_old[fl][ab][9:]
+            print(row, fl)
             for j in range(len(row)):
                 worksheet.write(i, j, row[j])
         i+=1

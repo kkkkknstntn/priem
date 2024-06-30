@@ -302,10 +302,6 @@ def func(spisok, urls):
 
 
 
-
-
-
-
 spisok = ["budj_obs", "budj_osob", "cel", "zo"]
 func(spisok, urls)
 
