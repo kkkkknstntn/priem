@@ -1,8 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import csv
+import openpyxl
 from collections import OrderedDict
+import xlsxwriter
+
 def remove_leading_zeros(s):
     return re.sub(r'^0+', '', s)
 
@@ -238,51 +240,70 @@ def func(spisok, urls):
                         abituras[remove_leading_zeros(cols[1])] = Abitura(cols[1:8], prior, tables, dop)
 
     for fl in abituras_old:
-        with open("old/" + fl + ".csv", mode='r') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                row1 = row[0].split(';')
-                print(row1)
-                abituras_old[fl][remove_leading_zeros(row1[0])] = row1
-
-    with open("new.csv", 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        for fl in spisok:
-            writer.writerow(d[fl])
-            for ab in abituras_old[fl]:
-                if ab not in abituras:
-                    if len(abituras_old[fl][ab]) < 20:
-                        abituras_old[fl][ab] = abituras_old[fl][ab] + [''] * (20 - len(abituras_old[fl][ab]))
-                    writer = csv.writer(csvfile)
-                    writer.writerow(abituras_old[fl][ab])
+        wb = openpyxl.load_workbook("tables/" + fl + ".xlsx")
+        sheet = wb.active
+        for i in range(1, sheet.max_row + 1):
+            row_data = []
+            for j in range(1, sheet.max_column + 1):
+                cell_value = sheet.cell(row=i, column=j).value
+                if cell_value is not None:
+                    row_data.append(cell_value)
                 else:
-                    row = abituras[ab].row
-                    for i in range(len(row)):
-                        if row[i] == 'Нет данных' or row[i] == '---':
-                            row[i] = ''
-                        elif row[i] == 'Ориг.':
-                            row[i] = 'Оригинал'
-                    if len(row) < 8:
-                        row.insert(6, '')
-                    new_row = abituras_old[fl][ab][0:3] + abituras[ab].prior[0:5] + [
-                        ' '.join(abituras[ab].prior[5:])] + row[1:] + [' '.join(abituras[ab].dop)] + abituras_old[fl][
-                                                                                                         ab][-3:]
-                    writer = csv.writer(csvfile)
-                    writer.writerow(new_row)
-            for ab in abituras:
-                if fl in abituras[ab].tables and ab not in abituras_old[fl]:
-                        row = abituras[ab].row
-                        for i in range(len(row)):
-                            if row[i] == 'Нет данных' or row[i] == '---':
-                                row[i] = ''
-                            elif row[i] == 'Ориг.':
-                                row[i] = 'Оригинал'
-                        if len(row) < 8:
-                            row.insert(6, '')
-                        new_row = row[0:1] + ['', ''] + abituras[ab].prior[0:5] + [
-                            ' '.join(abituras[ab].prior[5:])] + row[1:] + [' '.join(abituras[ab].dop),
-                                                                           '', 'госуслуги', 'Нет документа об образовании']
-                        writer.writerow(new_row)
+                    row_data.append('')
+            abituras_old[fl][row_data[0]] = row_data
+
+    for fl in spisok:
+        g = 0
+
+        workbook = xlsxwriter.Workbook("tables/" + fl + '.xlsx')
+        worksheet = workbook.add_worksheet()
+        for ab in abituras_old[fl]:
+            if len(abituras_old[fl][ab]) < 20:
+                abituras_old[fl][ab] = abituras_old[fl][ab] + [''] * (20 - len(abituras_old[fl][ab]))
+            abitr = abituras_old[fl][ab]
+            if ab not in abituras:
+                for j in range(len(abitr)):
+                    worksheet.write(g, j, abitr[j])
+            else:
+                row = abituras[ab].row
+                for i in range(len(row)):
+                    if row[i] == 'Нет данных' or row[i] == '---':
+                        row[i] = ''
+                    elif row[i] == 'Ориг.':
+                        row[i] = 'Оригинал'
+                    elif row[i] == 'Копия':
+                        row[i] = 'Копия'
+                if len(row) < 8:
+                    row.insert(6, '')
+                new_row = abituras_old[fl][ab][0:3] + abituras[ab].prior[0:5] + [
+                    ' '.join(abituras[ab].prior[5:])] + row[1:] + [' '.join(abituras[ab].dop)] + abituras_old[fl][ ab][-3:]
+
+                for j in range(len(new_row)):
+                    worksheet.write(g, j, new_row[j])
+            g += 1
+
+        for ab in abituras:
+            if fl in abituras[ab].tables and ab not in abituras_old[fl]:
+                row = abituras[ab].row
+                for i in range(len(row)):
+                    if row[i] == 'Нет данных' or row[i] == '---':
+                        row[i] = ''
+                    elif row[i] == 'Ориг.':
+                        row[i] = 'Оригинал'
+                if len(row) < 8:
+                    row.insert(6, '')
+                new_row = row[0:1] + ['', ''] + abituras[ab].prior[0:5] + [
+                    ' '.join(abituras[ab].prior[5:])] + row[1:] + [' '.join(abituras[ab].dop),
+                                                                  '', 'госуслуги', 'Нет документа об образовании']
+                for j in range(len(new_row)):
+                    worksheet.write(g, j, new_row[j])
+                g += 1
+        workbook.close()
+
+
+
+
+
 
 
 spisok = ["budj_obs", "budj_osob", "cel", "zo"]
