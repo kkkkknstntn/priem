@@ -100,7 +100,7 @@ for row in cell_list:
             flag1 = False
         if "и" in row12:
             print(row12)
-            prior[pr] += "ИК "
+            prior[pr] += "И К "
             tables.add("inostr")
         elif "ОК" in row12:
             prior[pr] += "ОК "
