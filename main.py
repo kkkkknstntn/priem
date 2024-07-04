@@ -280,8 +280,8 @@ def func(spisok, urls):
                 if abituras_old[fl][ab][15] != abituras[ab].row[7]:
                     print(ab, ": ",abituras_old[fl][ab][15], " -> ", abituras[ab].row[7])
                 if abituras_old[fl][ab][13] != '':
-                    if int(abituras_old[fl][ab][13]) < int(abituras[ab].row[5]):
-                        print(int(abituras_old[fl][ab][13]) - int(int(abituras[ab].row[5])))
+                    if int(abituras_old[fl][ab][13]) +  int(abituras_old[fl][ab][14])  < int(abituras[ab].row[5]) + int(abituras[ab].row[6]):
+                        print(ab, int(abituras_old[fl][ab][13]) + int(abituras_old[fl][ab][14]) - int(abituras[ab].row[5]) + int(abituras[ab].row[6]))
                 if abituras[ab].row[7] == "Оригинал":
                     for num in range(5):
                         if abituras_old[fl][ab][3+num][:2] != abituras[ab].prior[num][:2]:
