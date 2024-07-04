@@ -122,7 +122,7 @@ def func(spisok, urls):
                         dop = []
                         tables = set()
                         s = cols[10].split()
-                        print(url)
+                        # print(url)
                         ttl = soup.find_all(class_="svodka-table__info-wrap")[0]
                         ttl = ttl.find_all(class_="svodka-table__info-name")
 
@@ -151,7 +151,7 @@ def func(spisok, urls):
                         if ttl[2] == "Целевой":
                             tables.add("cel")
                             prior[cols[9] - 1] += " Ц"
-                        print(cols[1])
+                        # print(cols[1])
 
 
                         while i < len(s):
@@ -277,6 +277,15 @@ def func(spisok, urls):
                     row.insert(6, '')
                 new_row = abituras_old[fl][ab][0:3] + abituras[ab].prior[0:5] + [
                     ' '.join(abituras[ab].prior[5:])] + row[1:] + [' '.join(abituras[ab].dop)] + abituras_old[fl][ ab][-3:]
+                if abituras_old[fl][ab][15] != abituras[ab].row[7]:
+                    print(ab, ": ",abituras_old[fl][ab][15], " -> ", abituras[ab].row[7])
+                if abituras_old[fl][ab][13] != '':
+                    if int(abituras_old[fl][ab][13]) < int(abituras[ab].row[5]):
+                        print(int(abituras_old[fl][ab][13]) - int(int(abituras[ab].row[5])))
+                if abituras[ab].row[7] == "Оригинал":
+                    for num in range(5):
+                        if abituras_old[fl][ab][3+num][:2] != abituras[ab].prior[num][:2]:
+                            print(ab,abituras_old[fl][ab][3+num], "-> ",  abituras[ab].prior[num] )
 
                 for j in range(len(new_row)):
                     worksheet.write(g, j, new_row[j])
