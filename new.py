@@ -208,24 +208,23 @@ for fl in abituras:
                                 abituras[fl][ab][13]) + int(abituras[fl][ab][14]):
                             print(ab, int(abituras_old[fl][ab][13]) + int(abituras_old[fl][ab][14]) - int(
                                 abituras[fl][ab][13]) + int(abituras[fl][ab][14]))
-                    if abituras[ab].row[7] == "Оригинал":
+                    if abituras[fl][ab][15]  == "Оригинал":
                         for num in range(5):
                             if abituras_old[fl][ab][3 + num][:2] != abituras[fl][ab][3 + num][:2]:
                                 print(ab, abituras_old[fl][ab][3 + num], "-> ", abituras[ab][fl][ab][3 + num][:2])
-
-                    abituras_old[fl][ab][2] = abituras[fl][ab][2]
-                    for num in range(6):
-                        abituras_old[fl][ab][2 + num] = abituras[fl][ab][2 + num]
-                    abituras_old[fl][ab][16] = abituras[fl][ab][16]
+                abituras_old[fl][ab][2] = abituras[fl][ab][2]
+                for num in range(6):
+                    abituras_old[fl][ab][2 + num] = abituras[fl][ab][2 + num]
+                abituras_old[fl][ab][16] = abituras[fl][ab][16]
             abitr = abituras_old[fl][ab]
             for j in range(len(abitr)):
                 worksheet.write(g, j, abitr[j])
             g += 1
         for ab in abituras[fl]:
-            if ab not in abituras_old:
+            if ab not in abituras_old[fl]:
                 print(abituras[fl][ab])
                 abitr = abituras[fl][ab]
                 for j in range(len(abitr)):
                     worksheet.write(g, j, abitr[j])
-            g += 1
+                g += 1
         workbook.close()
