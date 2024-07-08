@@ -107,7 +107,7 @@ for url in urls:
                 ttl = (ttl[2].string, ttl[4].string, ttl[5].string.split(' ')[0])
 
                 name_first = kniit[ttl[0]]
-                osnov = "ОО"
+                osnov = ""
                 fl = "budj_obs"
 
                 if ttl[1] == "Заочная":
@@ -122,7 +122,6 @@ for url in urls:
                     osnov = "ОК"
                 if ttl[2] == "Полное":
                     fl = "kom"
-                    osnov = "К"
 
                 if ttl[2] == "Целевой":
                     fl = "cel"
@@ -201,7 +200,7 @@ for fl in abituras:
     workbook = xlsxwriter.Workbook("tables/" + fl + '.xlsx')
     worksheet = workbook.add_worksheet()
     for ab in abituras_old[fl]:
-        if ab in abituras:
+        if ab in abituras[fl]:
             if abituras_old[fl][ab][15] != abituras[fl][ab][15]:
                 print(ab, ": ", abituras_old[fl][ab][15], " -> ", abituras[ab][fl][ab][15])
                 if abituras_old[fl][ab][13] != '':
@@ -215,7 +214,9 @@ for fl in abituras:
                             print(ab, abituras_old[fl][ab][3 + num], "-> ", abituras[ab][fl][ab][3 + num][:2])
                 else:
                     abituras_old[fl][ab][15] = abituras_old[fl][ab][15]
+
             abituras_old[fl][ab][2] = abituras[fl][ab][2]
+            print(abituras_old[fl][ab][2])
             for num in range(6):
                 abituras_old[fl][ab][2 + num] = abituras[fl][ab][2 + num]
 
