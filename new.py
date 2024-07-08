@@ -27,7 +27,8 @@ urls = ["https://www.sgu.ru/svodka/1295", "https://www.sgu.ru/svodka/1494", "htt
         "https://www.sgu.ru/svodka/2415",
         "https://www.sgu.ru/svodka/1296", "https://www.sgu.ru/svodka/1498", "https://www.sgu.ru/svodka/1623",
 
-        "https://www.sgu.ru/svodka/1357", "https://www.sgu.ru/svodka/1499", "https://www.sgu.ru/svodka/1787", "https://www.sgu.ru/svodka/1788", "https://www.sgu.ru/svodka/1791",
+        "https://www.sgu.ru/svodka/1357", "https://www.sgu.ru/svodka/1499", "https://www.sgu.ru/svodka/1787",
+        "https://www.sgu.ru/svodka/1788", "https://www.sgu.ru/svodka/1791",
         "https://www.sgu.ru/svodka/1792", "https://www.sgu.ru/svodka/1795", "https://www.sgu.ru/svodka/1794",
         "https://www.sgu.ru/svodka/1793"
         ]
@@ -176,55 +177,62 @@ for url in urls:
                     orig = "Копия"
                     if "Ориг." in s:
                         orig = "Оригинал"
-                    fin_row = [cols[1], "", osnov] + [""] * 6 + cols[2:7]+ [""] + [orig, fin_row16, '', "госуслуги", "Нет документа об образовании"]
+                    fin_row = [cols[1], "", osnov] + [""] * 6 + cols[2:7] + [""] + [orig, fin_row16, '', "госуслуги",
+                                                                                    "Нет документа об образовании"]
                     fin_row = ['0' if item in ['Нет данных', '---'] else item for item in fin_row]
                     fin_row[cols[9] + 2] = name_first
                     abituras[fl][cols[1]] = fin_row
 
 for fl in abituras_old:
-        wb = openpyxl.load_workbook("tables/" + fl + ".xlsx")
-        sheet = wb.active
-        for i in range(1, sheet.max_row + 1):
-            row_data = []
-            for j in range(1, sheet.max_column + 1):
-                cell_value = sheet.cell(row=i, column=j).value
-                if cell_value is not None:
-                    row_data.append(cell_value)
-                else:
-                    row_data.append('')
-            abituras_old[fl][remove_leading_zeros(row_data[0])] = row_data
-
+    wb = openpyxl.load_workbook("tables/" + fl + ".xlsx")
+    sheet = wb.active
+    for i in range(1, sheet.max_row + 1):
+        row_data = []
+        for j in range(1, sheet.max_column + 1):
+            cell_value = sheet.cell(row=i, column=j).value
+            if cell_value is not None:
+                row_data.append(cell_value)
+            else:
+                row_data.append('')
+        abituras_old[fl][remove_leading_zeros(row_data[0])] = row_data
 
 for fl in abituras:
-        g = 0
-        workbook = xlsxwriter.Workbook("tables/" + fl + '.xlsx')
-        worksheet = workbook.add_worksheet()
-        for ab in abituras_old[fl]:
-            if ab in abituras:
-                if abituras_old[fl][ab][15] != abituras[fl][ab][15]:
-                    print(ab, ": ", abituras_old[fl][ab][15], " -> ", abituras[ab][fl][ab][15])
-                    if abituras_old[fl][ab][13] != '':
-                        if int(abituras_old[fl][ab][13]) + int(abituras_old[fl][ab][14]) < int(
-                                abituras[fl][ab][13]) + int(abituras[fl][ab][14]):
-                            print(ab, int(abituras_old[fl][ab][13]) + int(abituras_old[fl][ab][14]) - int(
-                                abituras[fl][ab][13]) + int(abituras[fl][ab][14]))
-                    if abituras[fl][ab][15]  == "Оригинал":
-                        for num in range(5):
-                            if abituras_old[fl][ab][3 + num][:2] != abituras[fl][ab][3 + num][:2]:
-                                print(ab, abituras_old[fl][ab][3 + num], "-> ", abituras[ab][fl][ab][3 + num][:2])
-                abituras_old[fl][ab][2] = abituras[fl][ab][2]
-                for num in range(6):
-                    abituras_old[fl][ab][2 + num] = abituras[fl][ab][2 + num]
-                abituras_old[fl][ab][16] = abituras[fl][ab][16]
-            abitr = abituras_old[fl][ab]
+    g = 0
+    workbook = xlsxwriter.Workbook("tables/" + fl + '.xlsx')
+    worksheet = workbook.add_worksheet()
+    for ab in abituras_old[fl]:
+        if ab in abituras:
+            if abituras_old[fl][ab][15] != abituras[fl][ab][15]:
+                print(ab, ": ", abituras_old[fl][ab][15], " -> ", abituras[ab][fl][ab][15])
+                if abituras_old[fl][ab][13] != '':
+                    if int(abituras_old[fl][ab][13]) + int(abituras_old[fl][ab][14]) < int(
+                            abituras[fl][ab][13]) + int(abituras[fl][ab][14]):
+                        print(ab, int(abituras_old[fl][ab][13]) + int(abituras_old[fl][ab][14]) - int(
+                            abituras[fl][ab][13]) + int(abituras[fl][ab][14]))
+                if abituras[fl][ab][15] == "Оригинал":
+                    for num in range(5):
+                        if abituras_old[fl][ab][3 + num][:2] != abituras[fl][ab][3 + num][:2]:
+                            print(ab, abituras_old[fl][ab][3 + num], "-> ", abituras[ab][fl][ab][3 + num][:2])
+                else:
+                    abituras_old[fl][ab][15] = abituras_old[fl][ab][15]
+            abituras_old[fl][ab][2] = abituras[fl][ab][2]
+            for num in range(6):
+                abituras_old[fl][ab][2 + num] = abituras[fl][ab][2 + num]
+
+            for num in range(6):
+                abituras_old[fl][ab][2 + num] = abituras[fl][ab][2 + num]
+            for num in range(5):
+                abituras_old[fl][ab][9 + num] = abituras[fl][ab][9 + num]
+            abituras_old[fl][ab][16] = abituras[fl][ab][16]
+        abitr = abituras_old[fl][ab]
+        for j in range(len(abitr)):
+            worksheet.write(g, j, abitr[j])
+        g += 1
+    for ab in abituras[fl]:
+        if ab not in abituras_old[fl]:
+            print(abituras[fl][ab])
+            abitr = abituras[fl][ab]
             for j in range(len(abitr)):
                 worksheet.write(g, j, abitr[j])
             g += 1
-        for ab in abituras[fl]:
-            if ab not in abituras_old[fl]:
-                print(abituras[fl][ab])
-                abitr = abituras[fl][ab]
-                for j in range(len(abitr)):
-                    worksheet.write(g, j, abitr[j])
-                g += 1
-        workbook.close()
+    workbook.close()
